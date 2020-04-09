@@ -162,7 +162,6 @@ def profile_follow(request, username):
     status_follow = Follow.objects.filter(user=request.user, author=author)
     if not status_follow and author != request.user:
         follow_object = Follow.objects.create(user=request.user, author=author)
-        #follow = Follow.objects.all().delete()
     return redirect('profile', username=username)
 
 
