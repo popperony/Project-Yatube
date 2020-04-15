@@ -31,7 +31,10 @@ def group_posts(request, slug):
 @login_required
 def new_post(request):
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(
+            request.POST or None,
+            files=request.FILES or None,
+        )
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -116,6 +119,19 @@ def post_edit(request, username, post_id):
         "new.html",
         {"form": form, "post": post},
     )
+
+
+def post_delete(request, username, post_id):
+    profile = get_object_or_404(User, username=username)
+    post = get_object_or_404(Post, pk=post_id, author=profile)
+    if request.user != profile:
+        return redirect(
+            "post",
+            username=request.user.username,
+            post_id=post_id
+            )
+    post.delete()
+    return redirect('index')
 
 @login_required
 def add_comment(request, username, post_id):
